@@ -8,11 +8,17 @@ export default async function handler(req, res) {
       headers: { 'User-Agent': 'Mozilla/5.0' } // aiuta con alcuni feed che bloccano richieste generiche
     });
     const feedUrls = [
-      'https://gigicogo.substack.com/feed',
+      'https://www.ansa.it/canale_tecnologia/notizie/tecnologia_rss.xml',
       'https://medium.com/feed/tag/artificial-intelligence',
       'https://www.wired.it/feed/rss',
       'https://www.ilsole24ore.com/rss/tecnologia.xml',
       'https://www.startupitalia.eu/feed'
+      'http://www.dday.it/redazione.xml'
+      'https://ainews.it/feed/'
+      'https://gomoot.com/category/tech/intelligenza-artificiale/feed/'
+      'https://www.notizie.ai/feed/'
+      'https://rivistaai.substack.com/feed'
+
     ];
 
     let allItems = [];
