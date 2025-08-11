@@ -7,16 +7,19 @@ export default async function handler(req, res) {
     const parser = new Parser({
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GenAI-NewsBot/1.0)' }
     });
+
     const feedUrls = [
+      'https://gigicogo.substack.com/feed',
+      'https://medium.com/feed/tag/intelligenza-artificiale',
       'https://www.ansa.it/canale_tecnologia/notizie/tecnologia_rss.xml',
       'https://medium.com/feed/tag/artificial-intelligence',
       'https://www.wired.it/feed/rss',
       'https://www.ilsole24ore.com/rss/tecnologia.xml',
-      'https://www.startupitalia.eu/feed'
-      'http://www.dday.it/redazione.xml'
-      'https://ainews.it/feed/'
-      'https://gomoot.com/category/tech/intelligenza-artificiale/feed/'
-      'https://www.notizie.ai/feed/'
+      'https://www.startupitalia.eu/feed',
+      'http://www.dday.it/redazione.xml',
+      'https://ainews.it/feed/',
+      'https://gomoot.com/category/tech/intelligenza-artificiale/feed/',
+      'https://www.notizie.ai/feed/',
       'https://rivistaai.substack.com/feed'
     ];
 
@@ -30,7 +33,7 @@ export default async function handler(req, res) {
           link: item.link,
           pubDate: item.pubDate || item.isoDate || null,
           contentSnippet: (item.contentSnippet || item.content || '')
-            .replace(/<[^>]*>?/gm, '') // rimuove eventuali tag HTML
+            .replace(/<[^>]*>?/gm, '') // Rimuove eventuali tag HTML
             .trim()
         })));
       } catch (err) {
