@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   const [news, setNews] = useState([]);
@@ -10,14 +10,15 @@ export default function Home() {
       setLoading(true);
       try {
         const res = await fetch(`/api/news?days=${days}`);
-        if (!res.ok) throw new Error('Errore nella risposta del server');
+        if (!res.ok) throw new Error('Errore nella risposta API');
         const data = await res.json();
         setNews(data);
       } catch (err) {
-        console.error('Errore nel recupero delle notizie:', err);
+        console.error(err);
         setNews([]);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchNews();
   }, [days]);
@@ -35,18 +36,21 @@ export default function Home() {
       <section style={{ backgroundColor: '#e7f0fd', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
         <h2 style={{ color: '#1e3d59' }}>Ultime 10 notizie</h2>
         {loading ? (
-          <p>Caricamento in corso...</p>
-        ) : news.length > 0 ? (
-          news.map((item, idx) => (
-            <div key={idx} style={{ marginBottom: '15px' }}>
-              <a href={item.link} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 'bold', color: '#1e3d59', textDecoration: 'none' }}>
-                {item.title}
-              </a>
-              <p style={{ margin: '5px 0', color: '#555' }}>{item.contentSnippet}</p>
-            </div>
-          ))
-        ) : (
+          <p>Caricamento...</p>
+        ) : news.length === 0 ? (
           <p>Nessuna notizia trovata.</p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {news.map((item, idx) => (
+              <li key={idx} style={{ marginBottom: '15px', borderBottom: '1px solid #ccc', paddingBottom: '10px' }}>
+                <a href={item.link} target="_blank" rel="noopener noreferrer" style={{ fontSize: '1.1em', fontWeight: 'bold', color: '#1e3d59', textDecoration: 'none' }}>
+                  {item.title}
+                </a>
+                <p style={{ margin: '5px 0', color: '#333' }}>{item.contentSnippet}</p>
+                <small style={{ color: '#888' }}>{new Date(item.pubDate).toLocaleDateString()}</small>
+              </li>
+            ))
+          </ul>
         )}
       </section>
 
@@ -67,4 +71,3 @@ export default function Home() {
     </div>
   );
 }
-
