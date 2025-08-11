@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   try {
     const days = parseInt(req.query.days) || 3;
     const parser = new Parser({
-      headers: { 'User-Agent': 'Mozilla/5.0' } // aiuta con alcuni feed che bloccano richieste generiche
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GenAI-NewsBot/1.0)' }
     });
     const feedUrls = [
       'https://www.ansa.it/canale_tecnologia/notizie/tecnologia_rss.xml',
@@ -18,7 +18,6 @@ export default async function handler(req, res) {
       'https://gomoot.com/category/tech/intelligenza-artificiale/feed/'
       'https://www.notizie.ai/feed/'
       'https://rivistaai.substack.com/feed'
-
     ];
 
     let allItems = [];
@@ -29,20 +28,19 @@ export default async function handler(req, res) {
         allItems = allItems.concat(feed.items.map(item => ({
           title: item.title,
           link: item.link,
-          pubDate: item.pubDate || item.isoDate,
-          contentSnippet: item.contentSnippet || item.content || ''
+          pubDate: item.pubDate || item.isoDate || null,
+          contentSnippet: (item.contentSnippet || item.content || '')
+            .replace(/<[^>]*>?/gm, '') // rimuove eventuali tag HTML
+            .trim()
         })));
       } catch (err) {
-        console.error(`Errore caricando ${url}`, err.message);
+        console.error(`Errore caricando ${url}:`, err.message);
       }
-    }
-
-    if (allItems.length === 0) {
-      return res.status(200).json([]);
     }
 
     const cutoffDate = dayjs().subtract(days, 'day');
     const filtered = allItems.filter(item => {
+      if (!item.pubDate) return false;
       const date = dayjs(item.pubDate);
       return date.isValid() && date.isAfter(cutoffDate);
     });
@@ -51,7 +49,7 @@ export default async function handler(req, res) {
 
     res.status(200).json(filtered.slice(0, 10));
   } catch (error) {
-    console.error('Errore generale', error.message);
+    console.error('Errore generale:', error.message);
     res.status(500).json({ error: 'Errore nel recupero delle notizie' });
   }
 }
